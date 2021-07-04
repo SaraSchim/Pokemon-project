@@ -12,6 +12,6 @@ def finds_most_owned():
             result = cursor.fetchall()
             return result
     except:
-        print("Error")
+        print("DB Error")
 
 

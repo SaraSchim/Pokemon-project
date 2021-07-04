@@ -7,5 +7,5 @@ def find_owners(pokemon_name):
             result = cursor.fetchall()
             return result
     except:
-        print("Error")
+        print("DB Error")
 

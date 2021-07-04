@@ -1,5 +1,6 @@
 from connection import connection
 
+
 def find_by_type(type):
     try:
         with connection.cursor() as cursor:
