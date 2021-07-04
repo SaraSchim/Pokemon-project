@@ -7,7 +7,7 @@ def heaviest_pokemon():
             result = cursor.fetchall()
             return result
     except:
-        print("Error")
+        print("DB Error")
 
 
 
