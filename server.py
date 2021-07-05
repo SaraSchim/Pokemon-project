@@ -15,8 +15,12 @@ def update_pokemon_type(pokemon_name):
     url = "https://pokeapi.co/api/v2/pokemon/"+pokemon_name
     res = requests.get(url, verify=False).json()
     types=[i["type"]["name"] for i in res["types"]]
-    service.update_types(pokemon_name,types)
-    return ''
+    status = service.update_types(pokemon_name,types)
+    if status:
+        s=200
+    else:
+        s=400
+    return Response(status=s)
 
 @app.route("/getByType/<type>",methods=['GET'])
 def get_by_type(type):
@@ -53,7 +57,8 @@ def evolve_pokemon():
     evolution_chain_url = requests.get(pok_species_url, verify=False).json()['evolution_chain']['url']
     evolves_to_list = requests.get(evolution_chain_url, verify=False).json()['chain']['evolves_to']
     if evolves_to_list == []:
-        return
+        print("pokemon cannot evolve")
+        return Response("pokemon cannot evolve")
     else:
         evolves_to = evolves_to_list[0]['species']['name']
         if not service.does_pokemon_exist(evolves_to):
@@ -65,9 +70,6 @@ def evolve_pokemon():
             types = [i["type"]["name"] for i in pokemon_data["types"]]
             service.add_pokemon(id,evolves_to,height,weight,types)
         service.evolve_pokemon(pokemon_name,trainer,evolves_to)
-
-    
-
     return Response(json.dumps(evolves_to))
 
 
