@@ -1,5 +1,5 @@
 use pokemon;
-select * from pokemon;
+select * from ownedBy where owner_name='whitney';
 -- create table owner(
 --     name varchar(20) PRIMARY KEY,
 --     town varchar(20)

@@ -13,7 +13,6 @@ def add_pokemon(id, name, height, weight, types):
     except:
         print("DB Error")
 
-# add_pokemon(222, "bbb", 20,20, ["aaa","bbb","ccc"])
 
 
 def delete_pokemon(pokemon_name):
@@ -25,7 +24,6 @@ def delete_pokemon(pokemon_name):
     except:
         print("DB Error")
 
-# delete_pokemon("bbb")
 
 def heaviest_pokemon():
     try:
@@ -68,7 +66,6 @@ def find_roster(trainer_name):
     except:
         print("Error")
 
-print(find_roster("Loga"))
 
 def finds_most_owned():
     try:
@@ -104,14 +101,23 @@ def evolve_pokemon(pokemon_name, trainer, evolves_to):
     try:
         with connection.cursor() as cursor:
             cursor.execute( "SELECT id FROM pokemon where name=(%s)",(evolves_to))
-            evolves_id = Cursor.fetchall()[0]['id']
+            evolves_id = cursor.fetchall()[0]['id']
+            
             cursor.execute( "SELECT id FROM pokemon where name=(%s)",(pokemon_name))
-            pokemon_id = Cursor.fetchall()[0]['id']
+            pokemon_id = cursor.fetchall()[0]['id']
+            cursor.execute("select * from ownedby where pokemon_id = (%s) and owner_name = (%s)", (pokemon_id, trainer ))
+            does_exist = cursor.fetchall()
+            if not does_exist:
+                return False
+            cursor.execute("select * from ownedby where pokemon_id = (%s) and owner_name = (%s)", (evolves_id, trainer ))
+            has_evolve = cursor.fetchall()
+            if has_evolve:
+                return True
             cursor.execute("UPDATE ownedBy SET pokemon_id =(%s)  where pokemon_id = (%s) and owner_name = (%s)", (evolves_id, pokemon_id, trainer ))
-            result = cursor.fetchall()
-            return result
+            connection.commit()
+            return True
     except:
-        print("Error")
+        return False
 
 
 def does_pokemon_exist(pokemon_name):
