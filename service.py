@@ -83,10 +83,32 @@ def update_types(name,types):
     try:
         with connection.cursor() as cursor:
             for i in types:
-                id=cursor.execute( "SELECT id FROM pokemon where name=(%s);",(name))
-                cursor.execute("INSERT INTO type values(%s,%s);",(i,id))
+                id=cursor.execute( "SELECT id FROM pokemon where name=(%s)",(name))
+                cursor.execute("INSERT INTO type values(%s,%s)",(i,id))
             connection.commit()
     except:
         print("Error")
+
+
+def evolve_pokemon(pokemon_name, trainer, evolves_to):
+    try:
+        with connection.cursor() as cursor:
+            evolves_id = cursor.execute( "SELECT id FROM pokemon where name=(%s)",(evolves_to))
+            pokemon_id = cursor.execute( "SELECT id FROM pokemon where name=(%s)",(pokemon_name))
+            cursor.execute("UPDATE ownedBy SET pokemon_id =(%s)  where pokemon_id = (%s) and owner_name = (%s)", (evolves_id, pokemon_id, trainer ))
+            result = cursor.fetchall()
+            return result
+    except:
+        print("Error")
+
+
+def does_pokemon_exist(pokemon_name):
+    try:
+        with connection.cursor() as cursor:
+            pokemon = cursor.execute( "SELECT '{}' FROM pokemon".format(pokemon_name))
+            return pokemon != 0
+    except:
+        print("Error")
+
 
 print(heaviest_pokemon())

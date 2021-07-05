@@ -4,6 +4,7 @@ import service
 import requests
 app = Flask(__name__)
 
+
 @app.route("/trainerByPokemon/<pokemon_name>", methods=['GET'])
 def pokemon_by_trainer(pokemon_name):
     res = service.find_owners(pokemon_name)
@@ -21,25 +22,6 @@ def update_pokemon_type(pokemon_name):
 def get_by_type(type):
     pokemon=service.find_by_type(type)
     return Response(json.dumps(pokemon))
-
-@app.route("/evolve/<pokemon_name>",methods=['PUT'])
-def evolve(pokemon_name):
-    url = "https://pokeapi.co/api/v2/pokemon/"+pokemon_name
-    pokemon_info=requests.get(url, verify=False).json()
-    species_url = pokemon_info["species"]["url"]
-    species_info = requests.get(species_url, verify=False).json()
-    chain_url=species_info.get("evolution_chain")
-    chain_info=requests.get(chain_url, verify=False).json()
-    
-    return ''
-
-if __name__ == '__main__':
-    app.run(port=3000)
-import json
-import service
-from flask import Flask, Response, request
-
-app = Flask(__name__)
 
 
 @app.route('/pokemonByTrainer/<trainer_name>', methods=['GET'])
@@ -60,6 +42,34 @@ def add_pokemon():
 def delete_pokemon(pokemon_name):
     res = service.delete_pokemon(pokemon_name)
     return Response("deleted")
+
+
+@app.route('/evolvePokemon', methods=['PUT'])
+def evolve_pokemon():
+    pokemon_name = request.get_json()['pokemon_name']
+    trainer = request.get_json()['trainer']
+    url = "https://pokeapi.co/api/v2/pokemon/"+pokemon_name
+    pok_species_url = requests.get(url, verify=False).json()['species']['url']
+    evolution_chain_url = requests.get(pok_species_url, verify=False).json()['evolution_chain']['url']
+    evolves_to_list = requests.get(evolution_chain_url, verify=False).json()['chain']['evolves_to']
+    if evolves_to_list == []:
+        return
+    else:
+        evolves_to = evolves_to_list[0]['species']['name']
+        if not service.does_pokemon_exist(evolves_to):
+            pokemon_url = "https://pokeapi.co/api/v2/pokemon/"+evolves_to
+            pokemon_data = requests.get(pokemon_url, verify=False).json()
+            id = pokemon_data['id']
+            height = pokemon_data['height']
+            weight = pokemon_data['weight']
+            types = [i["type"]["name"] for i in pokemon_data["types"]]
+            service.add_pokemon(id,evolves_to,height,weight,types)
+        service.evolve_pokemon(pokemon_name,trainer,evolves_to)
+
+    
+
+    return Response(json.dumps(evolves_to))
+
 
 
 
