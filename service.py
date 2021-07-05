@@ -12,7 +12,7 @@ def heaviest_pokemon():
 def find_by_type(type):
     try:
         with connection.cursor() as cursor:
-            cursor.execute( "SELECT name FROM pokemon where type=(%s);",(type))
+            cursor.execute( "select pokemon.name FROM type join pokemon on pokemon.id=type.pokemon_id where type.name=(%s);",(type))
             result = cursor.fetchall()
             return result
     except:
@@ -52,5 +52,14 @@ def finds_most_owned():
         print("Error")
 
 
+def update_types(name,types):
+    try:
+        with connection.cursor() as cursor:
+            for i in types:
+                id=cursor.execute( "SELECT id FROM pokemon where name=(%s);",(name))
+                cursor.execute("INSERT INTO type values(%s,%s);",(i,id))
+            connection.commit()
+    except:
+        print("Error")
 
-
+print(heaviest_pokemon())

@@ -1,23 +1,19 @@
 use pokemon;
-
-
+select * from type;
 -- create table owner(
 --     name varchar(20) PRIMARY KEY,
 --     town varchar(20)
 -- );
-
-
 -- create table pokemon(
 --     id int PRIMARY KEY,
 --     name varchar(20),
 --     height int,
 --     weight int
 -- );
-
 create table type(
     name varchar(20),
     pokemon_id int,
-    primary key(name,pokemon_id),
+    primary key(name, pokemon_id),
     FOREIGN KEY(pokemon_id) REFERENCES pokemon(id)
 );
 -- create table ownedBy(
