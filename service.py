@@ -1,5 +1,29 @@
 from connection import connection
 
+def add_pokemon(id, name, height, weight, types):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("insert into pokemon(id, name, height, weight) values({}, '{}', {}, {})".format(id,name,height,weight))
+            for i in range(len(types)):
+                cursor.execute("insert into type(name, pokemon_id) values('{}', {})".format(types[i],id))
+            connection.commit()
+    except:
+        print("DB Error")
+
+# add_pokemon(222, "bbb", 20,20, ["aaa","bbb","ccc"])
+
+
+def delete_pokemon(pokemon_name):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("delete from type where pokemon_id = (select id from pokemon where name = '{}')".format(pokemon_name))
+            cursor.execute("delete from pokemon where name = '{}'".format(pokemon_name))
+            connection.commit()
+    except:
+        print("DB Error")
+
+# delete_pokemon("bbb")
+
 def heaviest_pokemon():
     try:
         with connection.cursor() as cursor:
@@ -18,6 +42,7 @@ def find_by_type(type):
     except:
         print("Error")
 
+
 def find_owners(pokemon_name):
     try:
         with connection.cursor() as cursor:
@@ -27,6 +52,7 @@ def find_owners(pokemon_name):
     except:
         print("Error")
 
+
 def find_roster(trainer_name):
     try:
         with connection.cursor() as cursor:
@@ -35,6 +61,7 @@ def find_roster(trainer_name):
             return result
     except:
         print("Error")
+
 
 
 def finds_most_owned():
@@ -50,6 +77,9 @@ def finds_most_owned():
             return result
     except:
         print("Error")
+
+
+# print(finds_most_owned())
 
 
 
