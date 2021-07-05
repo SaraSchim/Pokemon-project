@@ -15,8 +15,12 @@ def update_pokemon_type(pokemon_name):
     url = "https://pokeapi.co/api/v2/pokemon/"+pokemon_name
     res = requests.get(url, verify=False).json()
     types=[i["type"]["name"] for i in res["types"]]
-    service.update_types(pokemon_name,types)
-    return ''
+    status = service.update_types(pokemon_name,types)
+    if status:
+        s=200
+    else:
+        s=400
+    return Response(status=s)
 
 @app.route("/getByType/<type>",methods=['GET'])
 def get_by_type(type):
