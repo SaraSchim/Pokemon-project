@@ -1,3 +1,6 @@
+from typing import Coroutine
+
+from pymysql.cursors import Cursor
 from connection import connection
 
 def add_pokemon(id, name, height, weight, types):
@@ -33,15 +36,16 @@ def heaviest_pokemon():
     except:
         print("DB Error")
 
+
 def find_by_type(type):
     try:
         with connection.cursor() as cursor:
             cursor.execute( "select pokemon.name FROM type join pokemon on pokemon.id=type.pokemon_id where type.name=(%s);",(type))
             result = cursor.fetchall()
-        return [i['name'] for i in result]
-
+            return [i['name'] for i in result]
     except:
         print("Error")
+
 
 
 def find_owners(pokemon_name):
@@ -49,7 +53,7 @@ def find_owners(pokemon_name):
         with connection.cursor() as cursor:
             cursor.execute( "SELECT ownedBy.owner_name FROM pokemon JOIN ownedBy ON pokemon.id = ownedBy.pokemon_id where pokemon.name=(%s);",(pokemon_name))
             result = cursor.fetchall()
-            return result
+            return [i['owner_name'] for i in result]
     except:
         print("Error")
 
@@ -60,12 +64,11 @@ def find_roster(trainer_name):
         with connection.cursor() as cursor:
             cursor.execute( "SELECT pokemon.name FROM pokemon JOIN ownedBy ON pokemon.id = ownedBy.pokemon_id where ownedBy.owner_name=(%s);",(trainer_name))
             result = cursor.fetchall()
-            return result
+            return [i['name'] for i in result]
     except:
         print("Error")
 
 print(find_roster("Loga"))
-
 
 def finds_most_owned():
     try:
@@ -77,28 +80,33 @@ def finds_most_owned():
                         having count(pokemon_id) = (select count(pokemon_id) as c\
                             from ownedBy group by pokemon_id order by c desc limit 1))")
             result = cursor.fetchall()
-            return result
+            return [i['name'] for i in result]
+
     except:
         print("Error")
+
 
 
 def update_types(name,types):
     try:
         with connection.cursor() as cursor:
-            cursor.execute( "SELECT id FROM pokemon where name=(%s)",(name))
-            id=cursor.fetchall()[0].get('id')
-            for i in types:               
+            for i in types:
+                cursor.execute( "SELECT id FROM pokemon where name=(%s)",(name))
+                id=cursor.fetchall()[0].get('id')
                 cursor.execute("INSERT INTO type values(%s,%s)",(i,id))
             connection.commit()
+            return True
     except:
-        print("Error")
+        return False
 
 
 def evolve_pokemon(pokemon_name, trainer, evolves_to):
     try:
         with connection.cursor() as cursor:
-            evolves_id = cursor.execute( "SELECT id FROM pokemon where name=(%s)",(evolves_to))
-            pokemon_id = cursor.execute( "SELECT id FROM pokemon where name=(%s)",(pokemon_name))
+            cursor.execute( "SELECT id FROM pokemon where name=(%s)",(evolves_to))
+            evolves_id = Cursor.fetchall()[0]['id']
+            cursor.execute( "SELECT id FROM pokemon where name=(%s)",(pokemon_name))
+            pokemon_id = Cursor.fetchall()[0]['id']
             cursor.execute("UPDATE ownedBy SET pokemon_id =(%s)  where pokemon_id = (%s) and owner_name = (%s)", (evolves_id, pokemon_id, trainer ))
             result = cursor.fetchall()
             return result
