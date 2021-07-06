@@ -1,6 +1,3 @@
-from typing import Coroutine
-
-from pymysql.cursors import Cursor
 from connection import connection
 
 def add_pokemon(id, name, height, weight, types):
@@ -34,7 +31,7 @@ def heaviest_pokemon():
             result = cursor.fetchall()
             return result
     except:
-        print("DB Error")
+        return "DB Error"
 
 
 def find_by_type(type):
@@ -100,12 +97,8 @@ def finds_most_owned():
                             from ownedBy group by pokemon_id order by c desc limit 1))")
             result = cursor.fetchall()
             return [i['name'] for i in result]
-
     except:
         print("Error")
-
-
-
 
 
 def evolve_pokemon(pokemon_name, trainer, evolves_to):
@@ -124,6 +117,7 @@ def evolve_pokemon(pokemon_name, trainer, evolves_to):
             does_exist = cursor.fetchall()
             if not does_exist:
                 return "the owner does not have this pokemon"
+
             cursor.execute("select * from ownedby where pokemon_id = (%s) and owner_name = (%s)", (evolves_id, trainer ))
             has_evolve = cursor.fetchall()
             if has_evolve:
@@ -140,6 +134,7 @@ def does_pokemon_exist(pokemon_name):
             pokemon = cursor.execute( "SELECT '{}' FROM pokemon".format(pokemon_name))
             return pokemon != 0
     except:
-        print("Error")
+        return "DB Error"
+
 
 
