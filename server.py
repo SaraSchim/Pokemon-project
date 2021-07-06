@@ -1,12 +1,9 @@
-from os import stat
 from flask import Flask, Response, request
 import json
-
-from pymysql import STRING
 import service
 import requests
-app = Flask(__name__)
 
+app = Flask(__name__)
 
 @app.route("/trainerByPokemon/<pokemon_name>", methods=['GET'])
 def get_trainer_by_pokemon(pokemon_name):
@@ -39,6 +36,7 @@ def update_pokemon_type(pokemon_name):
         return Response("updated {}'s types".format(pokemon_name),status=200)
     else:
         return Response("DB Error",status=501)
+
 
 @app.route("/getByType/<type>",methods=['GET'])
 def get_by_type(type):
@@ -94,10 +92,10 @@ def evolve_pokemon():
             types = [i["type"]["name"] for i in pokemon_data["types"]]
             service.add_pokemon(id,evolves_to,height,weight,types)
         res = service.evolve_pokemon(pokemon_name,trainer,evolves_to)
-        if res=="evolved pokemon already exists":
-            return Response(res,status=500)
         if res=="trainer doesn't exist" or res== "the owner does not have this pokemon":
             return Response(res,status=404)
+        if res=="evolved pokemon already exists":
+            return Response(res,status=500)    
         if res=="DB Error":
             return Response(res,status=501)
     return Response(json.dumps(evolves_to),status=200)
@@ -105,6 +103,4 @@ def evolve_pokemon():
 
 
 
-if __name__ == '__main__':
-    app.run(port=3000)
 
