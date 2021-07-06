@@ -1,4 +1,4 @@
-from client import get_pokemon_data, get_pokemon_data_2, update_pokemon_types
+from client import get_pokemon_data, get_pokemon_data_2
 from flask import Flask, Response, request
 import json
 import service
