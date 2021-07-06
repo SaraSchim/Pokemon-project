@@ -1,5 +1,6 @@
 from connection import connection
 import json
+
 def insert():
     try:
         with open("pokemon_data.json","r") as pokemon:

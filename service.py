@@ -1,5 +1,7 @@
 from connection import connection
 
+
+# add a new pokemon to the pokemon table
 def add_pokemon(id, name, height, weight, types):
     try:
         with connection.cursor() as cursor:
@@ -11,7 +13,7 @@ def add_pokemon(id, name, height, weight, types):
         return "DB Error"
 
 
-
+# delete a pokemon from the pokemon table
 def delete_pokemon(pokemon_name):
     try:
         with connection.cursor() as cursor:
@@ -24,28 +26,7 @@ def delete_pokemon(pokemon_name):
         return "DB Error"
 
 
-def heaviest_pokemon():
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute( "select name from pokemon where weight = (SELECT MAX(weight) FROM pokemon);")
-            result = cursor.fetchall()
-            return result
-    except:
-        return "DB Error"
-
-
-def find_by_type(type):
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute( "select pokemon.name FROM type join pokemon on pokemon.id=type.pokemon_id where type.name=(%s);",(type))
-            result = cursor.fetchall()
-            if not result:
-                return "type does not exist"
-            return [i['name'] for i in result]
-    except:
-        return "DB Error"
-
-
+# finds all owners of given pokemon
 def find_owners(pokemon_name):
     try:
         with connection.cursor() as cursor:
@@ -58,7 +39,7 @@ def find_owners(pokemon_name):
         return "DB Error"
 
 
-
+# finds all pokemons of given trainer
 def find_roster(trainer_name):
     try:
         with connection.cursor() as cursor:
@@ -71,7 +52,21 @@ def find_roster(trainer_name):
         return "DB Error"
 
 
+# find all pokemons with the given type
+def find_by_type(type):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute( "select pokemon.name FROM type join pokemon on pokemon.id=type.pokemon_id where type.name=(%s);",(type))
+            result = cursor.fetchall()
+            if not result:
+                return "type does not exist"
+            return [i['name'] for i in result]
+    except:
+        return "DB Error"
 
+
+
+# updates the types of the given pokemon
 def update_types(name,types):
     try:
         with connection.cursor() as cursor:
@@ -85,22 +80,7 @@ def update_types(name,types):
         return False
 
 
-
-def finds_most_owned():
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT pokemon.name\
-                FROM ownedBy JOIN pokemon on ownedBy.pokemon_id = pokemon.id\
-                where ownedBy.pokemon_id in\
-                    (select pokemon_id from ownedBy group by pokemon_id\
-                        having count(pokemon_id) = (select count(pokemon_id) as c\
-                            from ownedBy group by pokemon_id order by c desc limit 1))")
-            result = cursor.fetchall()
-            return [i['name'] for i in result]
-    except:
-        print("Error")
-
-
+# evolves the given pokemon
 def evolve_pokemon(pokemon_name, trainer, evolves_to):
     try:
         with connection.cursor() as cursor:
@@ -128,6 +108,7 @@ def evolve_pokemon(pokemon_name, trainer, evolves_to):
         return "DB Error"
 
 
+# checks if the given pokemon exists in the pokemon table
 def does_pokemon_exist(pokemon_name):
     try:
         with connection.cursor() as cursor:
@@ -135,6 +116,33 @@ def does_pokemon_exist(pokemon_name):
             return pokemon != 0
     except:
         return "DB Error"
+
+
+# finds the heaviest pokemon
+def heaviest_pokemon():
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute( "select name from pokemon where weight = (SELECT MAX(weight) FROM pokemon);")
+            result = cursor.fetchall()
+            return result
+    except:
+        return "DB Error"
+
+
+# finds the pokemon who has the most owners
+def finds_most_owned():
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT pokemon.name\
+                FROM ownedBy JOIN pokemon on ownedBy.pokemon_id = pokemon.id\
+                where ownedBy.pokemon_id in\
+                    (select pokemon_id from ownedBy group by pokemon_id\
+                        having count(pokemon_id) = (select count(pokemon_id) as c\
+                            from ownedBy group by pokemon_id order by c desc limit 1))")
+            result = cursor.fetchall()
+            return [i['name'] for i in result]
+    except:
+        print("Error")
 
 
 

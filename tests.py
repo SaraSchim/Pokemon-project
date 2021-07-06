@@ -40,8 +40,8 @@ def test_evolve():
     assert pinsir_res.status_code!=200
     arcie_res = requests.put(url = evolve_url,json={"pokemon_name":"spearow","trainer":"archie"})
     assert arcie_res.status_code!=200
-    # oddish_res = requests.put(url = evolve_url,json={"pokemon_name":"oddish","trainer":"whitney"})
-    # assert oddish_res.status_code==200
+    oddish_res = requests.put(url = evolve_url,json={"pokemon_name":"oddish","trainer":"whitney"})
+    assert oddish_res.status_code==200
     oddish_res = requests.put(url = evolve_url,json={"pokemon_name":"oddish","trainer":"whitney"})
     assert oddish_res.status_code!=200
     owners_url = 'http://localhost:3000/pokemonByTrainer/whitney'
@@ -49,7 +49,7 @@ def test_evolve():
     assert "gloom" in owners_res.json()
     assert "pikachu" in owners_res.json()
     assert "raichu" in owners_res.json()
-    # pikachu_res = requests.put(url = evolve_url,json={"pokemon_name":"pikachu","trainer":"whitney"})
-    # assert pikachu_res.status_code==200
+    pikachu_res = requests.put(url = evolve_url,json={"pokemon_name":"pikachu","trainer":"whitney"})
+    assert pikachu_res.status_code==200
 
 

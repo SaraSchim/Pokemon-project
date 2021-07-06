@@ -5,6 +5,8 @@ import requests
 
 app = Flask(__name__)
 
+# run 'GET' with url 'http://127.0.0.1:3000/trainerByPokemon/...'
+# in the ... put the pokemon name you want to get his trainers
 @app.route("/trainerByPokemon/<pokemon_name>", methods=['GET'])
 def get_trainer_by_pokemon(pokemon_name):
     res = service.find_owners(pokemon_name)
@@ -14,6 +16,9 @@ def get_trainer_by_pokemon(pokemon_name):
         return Response(res,status=501)
     return Response(json.dumps(res),status=200)
 
+
+# run 'GET' with url 'http://127.0.0.1:3000/pokemonByTrainer/...'
+# in the ... put the trainer name who you want to get his pokemons
 @app.route('/pokemonByTrainer/<trainer_name>', methods=['GET'])
 def get_pokemon_by_trainer(trainer_name):
     res = service.find_roster(trainer_name)
@@ -24,6 +29,9 @@ def get_pokemon_by_trainer(trainer_name):
     return Response(json.dumps(res),status=200)
 
 
+
+# run 'PUT' with url 'http://127.0.0.1:3000/updateType/...'
+# in the ... put the pokemon name you want to update his types
 @app.route("/updateType/<pokemon_name>",methods=['PUT'])
 def update_pokemon_type(pokemon_name):
     url = "https://pokeapi.co/api/v2/pokemon/"+pokemon_name
@@ -38,6 +46,9 @@ def update_pokemon_type(pokemon_name):
         return Response("DB Error",status=501)
 
 
+
+# run 'GET' with url 'http://127.0.0.1:3000/getByType/...'
+# in the ... put the type which you want to get the pokemons who have this type
 @app.route("/getByType/<type>",methods=['GET'])
 def get_by_type(type):
     res=service.find_by_type(type)
@@ -48,6 +59,8 @@ def get_by_type(type):
     return Response(json.dumps(res),status=200)
 
 
+# run 'POST' with url 'http://127.0.0.1:3000/addPokemon'
+# in the body put a json object: {"id": ..., "name": ..., "height": ..., "weight": ..., "types": ...} with the new pokemon's details
 @app.route('/addPokemon', methods=['POST'])
 def add_pokemon():
     data = request.get_json()
@@ -59,6 +72,9 @@ def add_pokemon():
     return Response("pokemon {} added".format(data['name']))
 
 
+
+# run 'DELETE' with url 'http://127.0.0.1:3000/deletePokemon/...'
+# in the ... put the pokemon name you want to delete
 @app.route('/deletePokemon/<pokemon_name>', methods=['DELETE'])
 def delete_pokemon(pokemon_name):
     res = service.delete_pokemon(pokemon_name)
@@ -69,6 +85,9 @@ def delete_pokemon(pokemon_name):
     return Response("pokemon {} deleted".format(pokemon_name))
 
 
+
+# run 'PUT' with url 'http://127.0.0.1:3000/evolvePokemon'
+# in the body put a json object: {"pokemon_name": ..., "trainer": ...} with the pokemon of the trainer which you evolve
 @app.route('/evolvePokemon', methods=['PUT'])
 def evolve_pokemon():
     pokemon_name = request.get_json()['pokemon_name']
