@@ -1,4 +1,4 @@
 # Pokemon-project
-using pymysql
+Using pymysql
 
-see "Pokemon Project Requirements Description.pdf"
+See "Pokemon Project Requirements Description.pdf"
